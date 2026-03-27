@@ -155,13 +155,13 @@ Now shadcn/ui."
 
 ---
 
-`[ACTION: Open src/lib/types.ts — create it if it doesn't exist]`
+`[ACTION: Open src/lib/types.ts — create it if it doesn't exist]` → [`src/lib/types.ts`](src/lib/types.ts)
 
 "I always start with types. Not because TypeScript forces me to, but because writing the types forces me to think clearly about the data flowing through the system before I've written any logic.
 
 What does an analysis result look like? Three fields."
 
-`[ACTION: Type out:]`
+`[ACTION: Type out:]` → [`types.ts L1–5`](src/lib/types.ts#L1-L5)
 
 ```typescript
 export interface AnalysisResult {
@@ -173,7 +173,7 @@ export interface AnalysisResult {
 
 "Now the API contract. This is a discriminated union — two possible shapes with a `success` field as the discriminant. TypeScript can narrow between them based on that field."
 
-`[ACTION: Type out:]`
+`[ACTION: Type out:]` → [`types.ts L7–20`](src/lib/types.ts#L7-L20)
 
 ```typescript
 export interface ApiSuccessResponse {
@@ -194,7 +194,7 @@ export type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
 
 "The `ErrorCode` is a union of string literals — not a generic string. This means if I add a new error code later, TypeScript will immediately tell me everywhere I need to handle it."
 
-`[ACTION: Type out:]`
+`[ACTION: Type out:]` → [`types.ts L34–41`](src/lib/types.ts#L34-L41)
 
 ```typescript
 export type ErrorCode =
@@ -209,7 +209,7 @@ export type ErrorCode =
 
 "And finally, the UI status type. This models the state machine — the app is always in exactly one of these states."
 
-`[ACTION: Type out:]`
+`[ACTION: Type out:]` → [`types.ts L27–33, L22–25`](src/lib/types.ts#L22-L33)
 
 ```typescript
 export type AnalysisStatus =
@@ -233,13 +233,13 @@ export interface VideoValidation {
 
 ---
 
-`[ACTION: Open src/lib/validators.ts — create it]`
+`[ACTION: Open src/lib/validators.ts — create it]` → [`src/lib/validators.ts`](src/lib/validators.ts)
 
 "Validation is interesting because some of it happens on the client and some on the server. Type and size can both be validated on both sides. Duration, however, can only be validated on the client — the browser is the only one who knows how long a video is without actually decoding it. The server gets a raw binary stream and has no duration information.
 
 Let me start with the constants."
 
-`[ACTION: Type out:]`
+`[ACTION: Type out:]` → [`validators.ts L3–13`](src/lib/validators.ts#L3-L13)
 
 ```typescript
 export const ALLOWED_MIME_TYPES = [
@@ -259,7 +259,7 @@ export const MAX_DURATION_SECONDS = 30;
 
 Now the file type validator. I check both MIME type and extension. Why both? Because some browsers — particularly older ones or ones on mobile — can misreport the MIME type of a video file. Checking the extension as a fallback adds robustness."
 
-`[ACTION: Type out validateFileType, validateFileSize, validateDuration, and validateFile functions from the validators.ts file]`
+`[ACTION: Type out validateFileType, validateFileSize, validateDuration, and validateFile functions from the validators.ts file]` → [`validators.ts L15–62`](src/lib/validators.ts#L15-L62)
 
 "Notice `validateFile` runs them in order and returns on the first failure. The user sees one error at a time, not a list of everything wrong at once. That's a small UX consideration but it matters."
 
@@ -269,11 +269,11 @@ Now the file type validator. I check both MIME type and extension. Why both? Bec
 
 ---
 
-`[ACTION: Open src/lib/utils.ts — shadcn already created this with cn()]`
+`[ACTION: Open src/lib/utils.ts — shadcn already created this with cn()]` → [`src/lib/utils.ts`](src/lib/utils.ts)
 
 "shadcn already gave us `cn()`, which merges Tailwind classes intelligently. I just need to add two more helpers — `formatFileSize` to display file sizes in human-readable form, and `formatDuration` for display purposes."
 
-`[ACTION: Add below the existing cn() function:]`
+`[ACTION: Add below the existing cn() function:]` → [`utils.ts L8–18`](src/lib/utils.ts#L8-L18)
 
 ```typescript
 export function formatFileSize(bytes: number): string {
@@ -295,7 +295,7 @@ export function formatDuration(seconds: number): string {
 
 ---
 
-`[ACTION: Open src/lib/gemini.ts — create it]`
+`[ACTION: Open src/lib/gemini.ts — create it]` → [`src/lib/gemini.ts`](src/lib/gemini.ts)
 
 "This is the heart of the application. Everything else is just plumbing around this file.
 
@@ -311,7 +311,7 @@ There's also a memory consideration. With base64, you're holding the entire file
 
 And then there's the code simplicity angle — the File API gives you a URI back, and you just reference that URI in the generation call. No encoding, no decoding, no size arithmetic. For video, the File API is simply the right tool."
 
-`[ACTION: Start typing — begin with the import and the system prompt constant:]`
+`[ACTION: Start typing — begin with the import and the system prompt constant:]` → [`gemini.ts L1–2`](src/lib/gemini.ts#L1-L2)
 
 ```typescript
 import { GoogleGenAI } from "@google/genai";
@@ -320,7 +320,7 @@ import type { AnalysisResult } from "./types";
 
 "The system prompt is a constant. I don't want it buried inside the function — I want it at the top of the file where I can read and iterate on it easily."
 
-`[ACTION: Type the SYSTEM_PROMPT constant:]`
+`[ACTION: Type the SYSTEM_PROMPT constant:]` → [`gemini.ts L4–12`](src/lib/gemini.ts#L4-L12)
 
 ```typescript
 const SYSTEM_PROMPT = `You are a video analysis AI specialized in human fall detection...
@@ -330,7 +330,7 @@ const SYSTEM_PROMPT = `You are a video analysis AI specialized in human fall det
 
 Now the response schema. This is Gemini's native structured output feature."
 
-`[ACTION: Type the RESPONSE_SCHEMA constant:]`
+`[ACTION: Type the RESPONSE_SCHEMA constant:]` → [`gemini.ts L14–33`](src/lib/gemini.ts#L14-L33)
 
 ```typescript
 const RESPONSE_SCHEMA = {
@@ -348,7 +348,7 @@ const RESPONSE_SCHEMA = {
 
 Now the client factory."
 
-`[ACTION: Type getClient():]`
+`[ACTION: Type getClient():]` → [`gemini.ts L35–41`](src/lib/gemini.ts#L35-L41)
 
 ```typescript
 function getClient(): GoogleGenAI {
@@ -364,7 +364,7 @@ function getClient(): GoogleGenAI {
 
 Now the main function."
 
-`[ACTION: Type analyzeVideoForFall() step by step, narrating each step:]`
+`[ACTION: Type analyzeVideoForFall() step by step, narrating each step:]` → [`gemini.ts L43–61`](src/lib/gemini.ts#L43-L61)
 
 ```typescript
 export async function analyzeVideoForFall(file: File): Promise<AnalysisResult> {
@@ -384,7 +384,7 @@ export async function analyzeVideoForFall(file: File): Promise<AnalysisResult> {
 
 Now here's something important I discovered while testing. Right after upload, the file is in a PROCESSING state — Gemini is transcoding it on their servers. If you immediately call `generateContent` with a file that's still processing, you get an error: 'The file is not in an ACTIVE state and usage is not allowed'. So we need to poll."
 
-`[ACTION: Type waitForFileActive():]`
+`[ACTION: Type waitForFileActive():]` → [`gemini.ts L107–132`](src/lib/gemini.ts#L107-L132)
 
 ```typescript
 async function waitForFileActive(
@@ -417,7 +417,7 @@ async function waitForFileActive(
 
 Back inside `analyzeVideoForFall` — after the upload we call `waitForFileActive`, then generate."
 
-`[ACTION: Continue typing the generateContent call:]`
+`[ACTION: Continue typing the generateContent call:]` → [`gemini.ts L62–89`](src/lib/gemini.ts#L62-L89)
 
 ```typescript
   await waitForFileActive(ai, uploadedFile.name);
@@ -443,7 +443,7 @@ Back inside `analyzeVideoForFall` — after the upload we call `waitForFileActiv
 
 Finally, parse and sanitize the response."
 
-`[ACTION: Type the parsing section and sanitizeResult():]`
+`[ACTION: Type the parsing section and sanitizeResult():]` → [`gemini.ts L91–152`](src/lib/gemini.ts#L91-L152)
 
 ```typescript
   const rawText = response.text;
@@ -483,11 +483,11 @@ function sanitizeResult(raw: unknown): AnalysisResult {
 
 ---
 
-`[ACTION: Create the directory src/app/api/analyze/ then open route.ts]`
+`[ACTION: Create the directory src/app/api/analyze/ then open route.ts]` → [`src/app/api/analyze/route.ts`](src/app/api/analyze/route.ts)
 
 "Now the API route. This is the only file where we connect the server-side Gemini logic to the web. The route needs to do several things in order — and the order matters."
 
-`[ACTION: Type out route.ts, pausing to explain each guard:]`
+`[ACTION: Type out route.ts, pausing to explain each guard:]` → [`route.ts L1–15`](src/app/api/analyze/route.ts#L1-L15)
 
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
@@ -518,7 +518,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 "Then parse the multipart form data. In Next.js App Router, you call `request.formData()` directly — there's no manual body parser configuration needed."
 
-`[ACTION: Continue with form data parsing, validation checks, and Gemini call — type each section from the route.ts file]`
+`[ACTION: Continue with form data parsing, validation checks, and Gemini call — type each section from the route.ts file]` → [`route.ts L17–93`](src/app/api/analyze/route.ts#L17-L93)
 
 "Notice how I'm using the same `validateFileType` and `validateFileSize` functions I defined in `validators.ts`. That's the benefit of putting them in a shared lib — no duplication between client and server.
 
@@ -530,13 +530,13 @@ The catch block at the end distinguishes between two types of errors — if the 
 
 ---
 
-`[ACTION: Create src/hooks/use-video-analysis.ts]`
+`[ACTION: Create src/hooks/use-video-analysis.ts]` → [`src/hooks/use-video-analysis.ts`](src/hooks/use-video-analysis.ts)
 
 "Now the React side. The hook is the brain of the UI — it manages all state transitions. I'm going to use `useReducer` rather than multiple `useState` calls.
 
 Why `useReducer`? Because the state here is not independent variables — they're tightly coupled. When a file is selected, the result and error should both clear. When analysis starts, the result should be null. These rules are much easier to express as explicit state transitions than as side effects of multiple independent `useState`s. With `useReducer`, every possible state combination is explicitly handled."
 
-`[ACTION: Type the State interface and Action union:]`
+`[ACTION: Type the State interface and Action union:]` → [`use-video-analysis.ts L7–22`](src/hooks/use-video-analysis.ts#L7-L22)
 
 ```typescript
 interface State {
@@ -559,11 +559,11 @@ type Action =
 
 "The actions are a discriminated union — each action type carries exactly the payload it needs. TypeScript will catch me if I try to access a field that doesn't exist on a given action type."
 
-`[ACTION: Type the reducer function:]`
+`[ACTION: Type the reducer function:]` → [`use-video-analysis.ts L32–65`](src/hooks/use-video-analysis.ts#L32-L65)
 
 "In the reducer, notice the memory leak prevention — whenever a file gets replaced or reset, I call `URL.revokeObjectURL` on the old URL. Object URLs hold references to the file in memory. If you never revoke them, you leak memory for every file the user selects. Small detail but important."
 
-`[ACTION: Type the hook function, narrating handleFileSelect and handleAnalyze:]`
+`[ACTION: Type the hook function, narrating handleFileSelect and handleAnalyze:]` → [`use-video-analysis.ts L80–156`](src/hooks/use-video-analysis.ts#L80-L156)
 
 "In `handleFileSelect` — I do the sync validation first, before creating the Object URL. If the type or size is wrong, there's no point creating a URL at all.
 
@@ -579,13 +579,13 @@ In `handleAnalyze` — I use the native `FormData` API to build a multipart requ
 
 ### VideoUpload
 
-`[ACTION: Create src/components/video-upload.tsx]`
+`[ACTION: Create src/components/video-upload.tsx]` → [`src/components/video-upload.tsx`](src/components/video-upload.tsx)
 
 "The upload component has some complexity to it — let me walk through the interesting parts.
 
 Duration check — I can't get the video duration from the `File` object alone. I need to actually load it into a `<video>` element, wait for the `loadedmetadata` event, and then read the `duration` property. So inside `handleFileFromInput`, I create a temporary video element programmatically, set its source to an Object URL, and hook into `onloadedmetadata`. Once I have the duration, I revoke that temporary URL immediately — I only made it to check the metadata, not for display."
 
-`[ACTION: Type the handleFileFromInput function:]`
+`[ACTION: Type the handleFileFromInput function:]` → [`video-upload.tsx L28–46`](src/components/video-upload.tsx#L28-L46)
 
 ```typescript
 const handleFileFromInput = useCallback((file: File) => {
@@ -609,7 +609,7 @@ const handleFileFromInput = useCallback((file: File) => {
 
 For the drag-and-drop — three events. `dragover` to signal we accept the drop and show the visual state, `dragleave` to reset the visual state, and `drop` to actually handle the file. I call `preventDefault()` on `dragover`, which is what tells the browser 'yes, you can drop here' — without it, the browser would navigate to the file."
 
-`[ACTION: Type the JSX, pausing to explain the visual states:]`
+`[ACTION: Type the JSX, pausing to explain the visual states:]` → [`video-upload.tsx L93–165`](src/components/video-upload.tsx#L93-L165)
 
 "The component has three visual states. Empty — the dashed border with the upload icon. Dragging — the border goes to primary color, slight scale up, background tints. File loaded — shows the filename, file size, and a remove button. All of these are driven by Tailwind classes with the `cn()` utility for conditional application.
 
@@ -617,19 +617,19 @@ One accessibility note — the div has `role='button'` and `tabIndex={0}` with a
 
 ### VideoPreview
 
-`[ACTION: Create src/components/video-preview.tsx]`
+`[ACTION: Create src/components/video-preview.tsx]` → [`src/components/video-preview.tsx`](src/components/video-preview.tsx)
 
 "The preview component is deliberately simple. Just a native `<video>` element with controls. I use the `key={src}` prop — this forces React to completely remount the element when the source changes. Without this, React might try to update the `src` attribute on the existing element, which can cause the browser to keep playing the previous video."
 
 ### AnalyzeButton
 
-`[ACTION: Create src/components/analyze-button.tsx]`
+`[ACTION: Create src/components/analyze-button.tsx]` → [`src/components/analyze-button.tsx`](src/components/analyze-button.tsx)
 
 "The button has three states — disabled when no video is loaded, active when ready, and loading with a spinner when analysis is running. The `aria-busy` attribute signals the loading state to screen readers. I'm using Lucide for icons — Loader2 with `animate-spin` for the spinner, Scan for the idle state."
 
 ### AnalysisResultCard
 
-`[ACTION: Create src/components/analysis-result.tsx]`
+`[ACTION: Create src/components/analysis-result.tsx]` → [`src/components/analysis-result.tsx`](src/components/analysis-result.tsx)
 
 "The results card is where the UI tells the story. I use a `Badge` component with dynamic variant — `destructive` for fall detected, green background for no fall. The progress bar for confidence uses Tailwind's arbitrary value selector `[&>div]:bg-destructive` to color the fill — that's targeting the shadcn Progress component's internal div.
 
@@ -639,7 +639,7 @@ The border also changes color — red tint when a fall was detected, green tint 
 
 ### ErrorToast
 
-`[ACTION: Create src/components/error-toast.tsx]`
+`[ACTION: Create src/components/error-toast.tsx]` → [`src/components/error-toast.tsx`](src/components/error-toast.tsx)
 
 "The error component wraps shadcn's Alert. It has a dismiss button positioned absolutely in the top right. `aria-live='assertive'` means screen readers will announce the error immediately when it appears."
 
@@ -649,7 +649,7 @@ The border also changes color — red tint when a fall was detected, green tint 
 
 ---
 
-`[ACTION: Open src/app/globals.css]`
+`[ACTION: Open src/app/globals.css]` → [`src/app/globals.css`](src/app/globals.css)
 
 "Tailwind 4 changes how you set up your CSS. Instead of the old three directives — `@tailwind base`, `@tailwind components`, `@tailwind utilities` — you now write a single `@import 'tailwindcss'`. That's it. The entire framework in one import.
 
@@ -657,7 +657,7 @@ The `@theme inline` block is how Tailwind 4 handles custom variables. Instead of
 
 All the shadcn colors are defined as CSS custom properties under `:root` and `.dark`. This is the standard shadcn-with-Tailwind-4 setup."
 
-`[ACTION: Open src/app/layout.tsx]`
+`[ACTION: Open src/app/layout.tsx]` → [`src/app/layout.tsx`](src/app/layout.tsx)
 
 "The layout is straightforward — Geist font from Google Fonts, metadata for the page title, and the body wrapper. One important detail — `suppressHydrationWarning` on the body element. Without this, you'll get a React hydration mismatch warning in development, because browser extensions like Grammarly inject attributes into the body tag after the server renders it but before React hydrates. The warning is harmless, but it pollutes the console. `suppressHydrationWarning` tells React to ignore attribute differences on this element only."
 
@@ -667,7 +667,7 @@ All the shadcn colors are defined as CSS custom properties under `:root` and `.d
 
 ---
 
-`[ACTION: Open src/app/page.tsx]`
+`[ACTION: Open src/app/page.tsx]` → [`src/app/page.tsx`](src/app/page.tsx)
 
 "The main page is the assembly point. It calls `useVideoAnalysis` and gets all the state and handlers back. Then it renders the components in order — error banner at the top if there is one, upload zone, preview if a video is loaded, analyze button, result if analysis succeeded.
 

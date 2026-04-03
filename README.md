@@ -127,12 +127,11 @@ src/
 | `.\scripts\11-verify.ps1` | Run all verification checks |
 
 ## Assumptions & Limitations
-
-- **Duration validation is client-side only.** The server cannot determine video duration; it only validates file type and size. A user could bypass the 30-second limit by sending a request directly to the API.
-- **Single video at a time.** The UI handles one video per session; no batch processing.
-- **No persistence.** No videos or results are saved to disk or a database.
-- **Free tier rate limits apply.** With the Gemini free tier, you get 10 requests/minute and 250 requests/day. The app does not implement retry logic or rate-limit handling.
-- **No authentication.** The app is intended for local/demo use. Deploying publicly without auth would expose your Gemini API quota.
+1. **Duration validation is client-side only.** The server cannot determine video duration; it only validates file type and size. A user could bypass the 30-second limit by sending a request directly to the API.
+2. **Single video at a time.** The UI handles one video per session; no batch processing.
+3. **No persistence.** No videos or results are saved to disk or a database.
+4. **Free tier rate limits apply.** With the Gemini free tier, you get 10 requests/minute and 250 requests/day. The app does not implement retry logic or rate-limit handling.
+5. **No authentication.** The app is intended for local/demo use. Deploying publicly without auth would expose your Gemini API quota.
 
 ## Privacy
 
